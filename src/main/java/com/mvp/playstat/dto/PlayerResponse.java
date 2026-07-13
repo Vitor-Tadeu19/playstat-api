@@ -13,6 +13,7 @@ public record PlayerResponse(
         BigDecimal pointsPerGame,
         BigDecimal reboundsPerGame,
         BigDecimal assistsPerGame,
+        TeamSummaryResponse team,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

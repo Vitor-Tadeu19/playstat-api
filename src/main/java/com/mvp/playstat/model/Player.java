@@ -40,6 +40,10 @@ public class Player {
     @Column(name = "assists_per_game")
     private BigDecimal assistsPerGame;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

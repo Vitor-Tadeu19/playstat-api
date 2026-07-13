@@ -2,9 +2,12 @@ package com.mvp.playstat.service;
 
 import com.mvp.playstat.dto.PlayerRequest;
 import com.mvp.playstat.dto.PlayerResponse;
+import com.mvp.playstat.dto.TeamSummaryResponse;
 import com.mvp.playstat.exception.ResourceNotFoundException;
 import com.mvp.playstat.model.Player;
+import com.mvp.playstat.model.Team;
 import com.mvp.playstat.repository.PlayerRepository;
+import com.mvp.playstat.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +18,11 @@ import java.util.List;
 public class PlayerService {
 
     private final PlayerRepository playerRepository;
+    private final TeamRepository teamRepository;
 
     public PlayerResponse create(PlayerRequest request) {
+        Team team = findTeamByIdOrNull(request.teamId());
+
         Player player = Player.builder()
                 .name(request.name())
                 .age(request.age())
@@ -26,6 +32,7 @@ public class PlayerService {
                 .pointsPerGame(request.pointsPerGame())
                 .reboundsPerGame(request.reboundsPerGame())
                 .assistsPerGame(request.assistsPerGame())
+                .team(team)
                 .build();
 
         Player savedPlayer = playerRepository.save(player);
@@ -72,6 +79,15 @@ public class PlayerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Player not found with id: " + id));
     }
 
+    private Team findTeamByIdOrNull(Long teamId) {
+        if (teamId == null) {
+            return null;
+        }
+
+        return teamRepository.findById(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found with id: " + teamId));
+    }
+
     private PlayerResponse toResponse(Player player) {
         return new PlayerResponse(
                 player.getId(),
@@ -83,8 +99,21 @@ public class PlayerService {
                 player.getPointsPerGame(),
                 player.getReboundsPerGame(),
                 player.getAssistsPerGame(),
+                toTeamSummaryResponse(player.getTeam()),
                 player.getCreatedAt(),
                 player.getUpdatedAt()
         );
     }
+    private TeamSummaryResponse toTeamSummaryResponse(Team team) {
+        if (team == null) {
+            return null;
+        }
+
+        return new TeamSummaryResponse(
+                team.getId(),
+                team.getName(),
+                team.getCity()
+        );
+    }
+
 }

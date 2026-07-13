@@ -29,6 +29,8 @@ public record PlayerRequest(
         BigDecimal reboundsPerGame,
 
         @PositiveOrZero(message = "Assists per game must be zero or positive")
-        BigDecimal assistsPerGame
+        BigDecimal assistsPerGame,
+
+        Long teamId
 ) {
 }
